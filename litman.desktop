@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Litman
+Comment=A reference manager.
+Exec=litman
+Icon=application-pdf.png
+Type=Application
+Categories=Office;Education
+Terminal=false

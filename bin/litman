@@ -1,0 +1,127 @@
+#!/usr/bin/env ruby
+
+require 'gtk3'
+require 'litman/widgets'
+require 'litman/database'
+require 'pathname'
+require 'fileutils'
+
+# The main window.
+class Litman < Gtk::Application
+  attr_accessor :database,
+                :bibliography_chooser,
+                :main_notebook,
+                :new_bib_page
+
+  DOCUMENTS_PAGE = 0
+
+  # Creates a new widget.
+  def initialize()
+    @page_table = {}
+    @page_id = 1
+    @path = Pathname.new("~/Documents").expand_path()
+    @database_dir = Pathname.new("~/.config/litman").expand_path()
+    @database_file = Pathname.new("~/.config/litman/litman.db").expand_path()
+    super()
+
+    self.signal_connect :activate do |application|
+      FileUtils.mkdir_p(@database_dir)
+      @database = Database::Database.new(@database_file, @path)
+
+      window = Gtk::ApplicationWindow.new(self)
+      window.set_title("Litman")
+
+      @main_notebook = Gtk::Notebook.new()
+      @main_notebook.show_tabs = false
+
+      @message_bar = Widgets::MessageBar.new()
+      @bibliography_chooser = Widgets::BibliographyChooser.new(self)
+      side_box = Widgets::SideBox.new(self)
+
+      @main_notebook.insert_page(Widgets::BibliographyViewer.new(self),
+                                 Gtk::Label.new("Notebook"), DOCUMENTS_PAGE)
+
+      pane = Gtk::Paned.new(:horizontal)
+      pane.pack1(side_box)
+      pane.pack2(main_notebook)
+      window_box = Gtk::Box.new(:vertical)
+      window.add(window_box)
+      window_box.add(@message_bar)
+      window_box.add(pane)
+
+      bibs = @database.bibliographies()
+      bibs.each do |bib|
+        self.add_bibliography_viewer(bib[0])
+      end
+
+      window.set_size_request(1000, 800)
+      window.show_all()
+      @message_bar.hide()
+      @main_notebook.page = DOCUMENTS_PAGE
+    end
+
+    # Adds a new BibliographyViewer showing documents from +name+.
+    def add_bibliography_viewer(name)
+      bib_view = Widgets::BibliographyViewer.new(self, name)
+      bib_view.show_all()
+      @main_notebook.insert_page(bib_view, Gtk::Label.new(name), @page_id)
+      @main_notebook.page = @page_id
+      @page_table[name] = @page_id
+      @page_id = @page_id + 1
+    end
+
+    # Switches to the page with the given name.
+    def switch_to_page(name)
+      if name.nil?
+        @main_notebook.page = DOCUMENTS_PAGE
+      else
+        page = @page_table[name]
+        @main_notebook.page = page
+      end
+      return @main_notebook.page
+    end
+  end
+
+  def get_page(name)
+    return @page_table[name]
+  end
+
+  def show_message(message)
+    @message_bar.show_message(message)
+  end
+
+  # Opens all selected files in the default viewer.
+  def open(key, file)
+    dir = Pathname.new(self.database.doc_dir).expand_path
+    k = key << ".pdf"
+    f = file << ".pdf"
+    open_file(dir, k, f, self.database.viewer_command)
+  end
+
+  # Locates +filename+ or +keyname+ in +directory+ and opens it in the default viewer.
+  def open_file(directory, keyname, filename, command)
+    directory.each_child do |c|
+      if c.directory?
+        open_file(c, keyname, filename, command)
+      elsif c.basename.to_s == keyname
+        launch(command, c)
+      elsif c.basename.to_s == filename
+        launch(command, c)
+      end
+    end
+  end
+
+  # Open +file+ with +program+.
+  def launch(program, file)
+    while program.sub!("%s", file.to_s)
+      nil
+    end
+    fork do
+      exec program
+    end
+  end
+
+end
+
+litman = Litman.new()
+litman.run()
