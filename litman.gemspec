@@ -1,5 +1,5 @@
 Gem::Specification.new do |s|
-  s.name = "Litman"
+  s.name = "litman"
   s.version = "0.0.0"
   s.license = "0BSD"
   s.summary = "A reference manager"
