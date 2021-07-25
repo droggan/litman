@@ -56,7 +56,13 @@ module Widgets
         end
       end
 
+
+
       box = Gtk::Box.new(:vertical)
+      unless @bibliography_name.nil?
+        header = Gtk::Label.new(@bibliography_name)
+        box.add(header)
+      end
       box.add(sw)
       box.add(filter_box)
 
