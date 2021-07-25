@@ -1,0 +1,25 @@
+Litman - a simple reference manager.
+
+Dependencies:
+  - Ruby
+  - Gtk3
+  - Sqlite
+
+  - Gems:
+    - gtk3
+    - bibtex-ruby
+    - sqlite3
+
+Build:
+  $ gem build litman-x.x.x.gemspec
+  $ gem install --user-intall litman-x.x.x.gem
+
+Basic Usage:
+
+Click Settings, set the directories, click update.
+
+Opening Files:
+
+When opening files litman seaches for <key>.pdf and <basename>.pdf.
+  <key>        The key used to cite the document
+  <basename>   The name of the file the entry in defined in
