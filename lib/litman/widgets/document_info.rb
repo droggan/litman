@@ -3,6 +3,36 @@ require 'litman/database'
 require 'pathname'
 
 module Widgets
+
+  class DocumentInfoPage < Gtk::Box
+    def initialize(litman, viewer, bib_name, selection)
+      super(:vertical)
+
+      sw = Gtk::ScrolledWindow.new()
+      self.add(sw)
+      sw_box = Gtk::Box.new(:vertical)
+      sw.add(sw_box)
+
+      selection.each do |model, path, iter|
+        d = DocumentInfo.new(litman, self, bib_name, iter)
+        d.hexpand = true
+        d.vexpand = true
+        sw_box.add(d)
+      end
+      close_button = ButtonWithIconAndLabel.new("close", "Close")
+      self.add(close_button)
+      self.show_all()
+
+      viewer.append_page(self)
+      id = viewer.page_num(self)
+      viewer.page = id
+      close_button.signal_connect :clicked do |w, e|
+        id = viewer.page_num(self)
+        viewer.remove_page(id)
+      end
+    end
+  end
+
   # This widget shows data belonging to specific document.
   class DocumentInfo < Gtk::Frame
     def initialize(litman, viewer, bib_name, iter)
@@ -40,6 +70,7 @@ module Widgets
       description_entry.buffer.signal_connect :changed do |w, ev|
         litman.database.set_description(iter[Database::ID], w.text)
       end
+
       description_box = Gtk::Box.new(:horizontal)
       description_box.pack_start(description_label)
       description_sw = Gtk::ScrolledWindow.new()
@@ -54,6 +85,7 @@ module Widgets
       grid.column_homogeneous = true
       grid.attach(description_box, 0, 0, 1, 1)
       grid.attach(description_sw, 0, 1, 5, 5)
+
       unless bib_name.nil?
         note_label = Gtk::Label.new("Note:")
         note_entry = Gtk::TextView.new()

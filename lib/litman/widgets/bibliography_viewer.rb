@@ -109,32 +109,12 @@ module Widgets
       end
     end
 
+    # Show the DocumentInfo page.
     def info()
-      box = Gtk::Box.new(:vertical)
-      sw = Gtk::ScrolledWindow.new()
-      box.add(sw)
-      sw_box = Gtk::Box.new(:vertical)
-      sw.add(sw_box)
-
-      @tree_view.selection.each do |model, path, iter|
-        d = DocumentInfo.new(@litman, self, @bibliography_name, iter)
-        d.hexpand = true
-        d.vexpand = true
-        sw_box.add(d)
-      end
-      close_button = ButtonWithIconAndLabel.new("close", "Close")
-      box.add(close_button)
-      box.show_all()
-
-      self.append_page(box)
-      id = self.page_num(box)
-      self.page = id
-      close_button.signal_connect :clicked do |w, e|
-        id = self.page_num(box)
-        self.remove_page(id)
-      end
+      DocumentInfoPage.new(@litman, self, @bibliography_name, @tree_view.selection)
     end
 
+    # Export the bibliography or selection.
     def export()
       files = []
       data = @tree_view.model
@@ -147,6 +127,7 @@ module Widgets
       self.export_files(files)
     end
 
+    # Export the files given by +files+
     def export_files(files)
       Exporter.new(self, files)
     end
