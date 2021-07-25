@@ -6,6 +6,7 @@ module Widgets
   # This widget shows data belonging to specific document.
   class DocumentInfo < Gtk::Frame
     def initialize(litman, viewer, bib_name, iter)
+      super()
 
       frame_box = Gtk::Box.new(:horizontal, 5)
       frame_label = Gtk::Label.new(iter[Database::KEY])
@@ -23,7 +24,6 @@ module Widgets
       frame_box.add(open_button)
       frame_box.add(export_button)
 
-      super()
       self.label_widget = frame_box
       info_box = Gtk::Box.new(:vertical, 5)
 

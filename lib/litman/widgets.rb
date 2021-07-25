@@ -8,4 +8,5 @@ module Widgets
   require 'litman/widgets/side_box'
   require 'litman/widgets/settings_page'
   require 'litman/widgets/message_bar'
+  require 'litman/widgets/exporter'
 end
