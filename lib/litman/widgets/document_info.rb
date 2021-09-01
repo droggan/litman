@@ -14,7 +14,7 @@ module Widgets
       sw.add(sw_box)
 
       selection.each do |model, path, iter|
-        d = DocumentInfo.new(litman, self, bib_name, iter)
+        d = DocumentInfo.new(litman, viewer, bib_name, iter)
         d.hexpand = true
         d.vexpand = true
         sw_box.add(d)
