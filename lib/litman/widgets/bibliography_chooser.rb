@@ -10,7 +10,7 @@ module Widgets
       @litman = litman
       @bibliography_list = Gtk::ListStore.new(String)
       rend = Gtk::CellRendererText.new()
-      column = Gtk::TreeViewColumn.new("Bibliograpies", rend, :text => 0)
+      column = Gtk::TreeViewColumn.new("Bibliographies", rend, :text => 0)
 
       @tree_view = Gtk::TreeView.new(@bibliography_list)
       @tree_view.append_column(column)
