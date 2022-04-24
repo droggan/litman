@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "litman"
-  s.version = "0.0.2"
+  s.version = "0.0.3"
   s.license = "0BSD"
   s.summary = "A reference manager"
   s.authors = ["Dennis Roggan"]
