@@ -11,8 +11,8 @@ Dependencies:
     - sqlite3
 
 Build:
-  $ gem build litman-x.x.x.gemspec
-  $ gem install --user-intall litman-x.x.x.gem
+  $ gem build litman
+  $ gem install --user-install litman-x.x.x.gem
 
 Basic Usage:
 
